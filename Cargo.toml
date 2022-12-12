@@ -1,0 +1,3 @@
+[workspace]
+members = ["rustwrap", "xtask"]
+default-members = ["rustwrap"]

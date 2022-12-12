@@ -1,0 +1,19 @@
+{
+  "name": "pkg",
+  "version": "0.0.0",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "homepage": "https://github.com/rusty-ferris-club/recon",
+  "author": "Dotan Nahum",
+  "license": "MIT",
+  "bugs": "https://github.com/rusty-ferris-club/recon/issues",
+  "description": "Find, locate, and query files for ops and security experts",
+  "files": [
+    "README.md"
+  ],
+  "keywords": [
+    "security",
+    "sql"
+  ]
+}

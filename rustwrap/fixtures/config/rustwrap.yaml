@@ -1,0 +1,42 @@
+targets:
+  - platform: win32
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/recon/releases/download/v0.6.0/recon-x86_64-windows.zip
+  - platform: linux
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/recon/releases/download/v0.6.0/recon-x86_64-linux.tar.xz
+  - platform: darwin
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/recon/releases/download/v0.6.0/recon-x86_64-macos.tar.xz
+  - platform: darwin
+    arch: arm64
+    url_template: https://github.com/rusty-ferris-club/recon/releases/download/v0.6.0/recon-aarch64-macos.tar.xz
+npm:
+  publish: false # dont publish to npm, just generate the packages on disk
+  org: "@recontools"
+  name: recon
+  root: 
+    name: recon-tool
+    manifest: rustwrap/fixtures/config/recon-root.json
+    readme: rustwrap/fixtures/config/README.md
+  sub: 
+    manifest: rustwrap/fixtures/config/recon-sub.json
+    readme: rustwrap/fixtures/config/README.md
+_brew:
+  name: recon
+  publish: true
+  tap: jondot/homebrew-tap
+  recipe_fname: recon.rb
+  recipe_template: |
+    class Recon < Formula
+      desc "recon"
+      homepage "http://www.example.com"
+      url "__URL__"
+      version "__VERSION__"
+      sha256 "__SHA__"
+
+      def install
+        bin.install "recon"
+      end
+    end
+
