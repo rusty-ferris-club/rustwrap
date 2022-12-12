@@ -1226,7 +1226,6 @@ dependencies = [
  "regex",
  "reqwest",
  "serde",
- "serde_derive",
  "serde_json",
  "serde_variant",
  "serde_yaml 0.9.14",

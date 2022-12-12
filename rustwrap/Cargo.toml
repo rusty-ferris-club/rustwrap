@@ -3,14 +3,21 @@ name = "rustwrap"
 version = "1.0.0"
 edition = "2021"
 
+description = "A tool that helps wrap binary releases for easy distribution"
+authors = ["Dotan Nahum <dotan@rng0.io>"]
+documentation = "https://docs.rs/rustwrap/"
+repository = "https://github.com/rusty-ferris-club/rustwrap"
+keywords = ["generator", "package", "release"]
+license = "Apache-2.0"
+readme = "../README.md"
+
 [dependencies]
 
 clap = { version = "4", features = ["cargo"] }
 indicatif = "0.17.2"
 reqwest = { version = "0.11.13", features = ["json", "blocking"] }
-serde = "1.0.149"
+serde = { version = "1.0.149", features = ["derive"] }
 serde_json = { version = "1.0.89", features = ["preserve_order"] }
-serde_derive = "1.0.149"
 serde_yaml = "0.9.14"
 serde_variant = "0.1.1"
 fs-err = "2.9.0"

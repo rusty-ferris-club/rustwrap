@@ -25,6 +25,11 @@ For macOS:
 ```
 brew tap rusty-ferris-club/tap && brew install rustwrap
 ```
+Through cargo:
+
+```
+cargo install rustwrap
+```
 
 Otherwise, grab a release from [releases](https://github.com/rusty-ferris-club/rustwrap/releases) and run `rustwrap --help`:
 
