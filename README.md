@@ -18,6 +18,17 @@ A tool that helps wrap binary releases for easy distribution. Currently supporti
 
 
 
+## Download
+
+For macOS:
+
+```
+brew tap rusty-ferris-club/tap && brew install rustwrap
+```
+
+Otherwise, grab a release from [releases](https://github.com/rusty-ferris-club/rustwrap/releases) and run `rustwrap --help`:
+
+
 ## Getting started
 
 Build a single `rustwrap.yaml`, and describe which releases you have an where to get them per platform, and your provider blocks.
