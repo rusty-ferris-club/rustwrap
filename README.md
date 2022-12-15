@@ -31,6 +31,12 @@ Through cargo:
 cargo install rustwrap
 ```
 
+Or [cargo-binstall](https://github.com/cargo-bins/cargo-binstall) for installing binaries (save compilation time):
+
+```
+cargo binstall rustwrap
+```
+
 Otherwise, grab a release from [releases](https://github.com/rusty-ferris-club/rustwrap/releases) and run `rustwrap --help`:
 
 
