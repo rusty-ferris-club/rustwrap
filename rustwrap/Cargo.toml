@@ -1,6 +1,6 @@
 [package]
 name = "rustwrap"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 
 description = "A tool that helps wrap binary releases for easy distribution"
@@ -13,12 +13,12 @@ readme = "../README.md"
 
 [package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-windows.zip"
-bin-dir = "rustwrap-x86_64-pc-windows-msvc/rustwrap.exe"
+bin-dir = "rustwrap-x86_64-windows/rustwrap.exe"
 pkg-fmt = "zip"
 
 [package.metadata.binstall.overrides.x86_64-apple-darwin]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-macos.tar.xz"
-bin-dir = "rustwrap-x86_64-apple-darwin/rustwrap"
+bin-dir = "rustwrap-x86_64-macos/rustwrap"
 pkg-fmt = "txz"
 
 [package.metadata.binstall.overrides.aarch64-apple-darwin]
