@@ -15,7 +15,7 @@ pub struct EnvConsole {}
 
 impl Console for EnvConsole {
     fn say(&mut self, text: &str) {
-        eprintln!("{}", text);
+        eprintln!("{text}");
     }
 }
 

@@ -65,7 +65,7 @@ impl Target {
     }
     pub fn bin_name<'a>(&self, name: &'a str) -> Cow<'a, str> {
         match self.platform {
-            Platform::Win32 => format!("{}.exe", name).into(),
+            Platform::Win32 => format!("{name}.exe").into(),
             _ => name.into(),
         }
     }

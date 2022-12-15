@@ -135,7 +135,7 @@ fn copy_readme(pkg_path: &Path, pkg: &PackageInfo) -> Result<()> {
     if let Some(readme) = &pkg.readme {
         fs::copy(
             readme,
-            &pkg_path.join(
+            pkg_path.join(
                 Path::new(readme)
                     .file_name()
                     .map_or("README.md".to_owned(), |f| f.to_string_lossy().to_string()),
@@ -153,9 +153,7 @@ pub fn publish(
     targets: &[Target],
     opts: &NpmOpts,
 ) -> Result<()> {
-    let out_dir = out_dir
-        .join(format!("{}-{}", opts.name, version))
-        .join("npm");
+    let out_dir = out_dir.join(format!("{}-{version}", opts.name)).join("npm");
     let prefix = format!("{} {}", crate::console::PKG, style("npm").green());
     session.console.say(&format!(
         "{} generating into {}",
@@ -220,10 +218,7 @@ pub fn publish(
     let rootpkg_json: serde_json::Value =
         serde_json::from_reader(fs::File::open(&opts.root.manifest)?)?;
     let rootpkg = edit_rootpkg(&rootpkg_json, version, targets, opts);
-    serde_json::to_writer_pretty(
-        fs::File::create(&rootpkg_path.join(PACKAGE_JSON))?,
-        &rootpkg,
-    )?;
+    serde_json::to_writer_pretty(fs::File::create(rootpkg_path.join(PACKAGE_JSON))?, &rootpkg)?;
 
     // copy readme
     copy_readme(&rootpkg_path, &opts.root)?;
@@ -249,13 +244,13 @@ pub fn publish(
     }
 
     // postinstall.js
-    fs::write(&rootpkg_path.join(POSTINSTALL_JS), POSTINSTALL)?;
+    fs::write(rootpkg_path.join(POSTINSTALL_JS), POSTINSTALL)?;
     tracing::trace!("npm: wrote binary and postinstall.");
 
     // info.json
     fs::write(
-        &rootpkg_path.join(INFO_JSON),
-        &serde_json::to_string_pretty(&json!({
+        rootpkg_path.join(INFO_JSON),
+        serde_json::to_string_pretty(&json!({
             "platforms": &targets.iter().map(|t| json!({
               "platform": t.platform,
               "arch": t.arch,
@@ -275,7 +270,7 @@ pub fn publish(
             &out,
         ));
     }
-    session.console.say(&format!("{} done.", prefix));
+    session.console.say(&format!("{prefix} done."));
     Ok(())
 }
 

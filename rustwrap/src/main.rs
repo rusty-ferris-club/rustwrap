@@ -102,10 +102,10 @@ fn main() {
 
     match res {
         Ok(ok) => {
-            exit(if ok { 0 } else { 1 });
+            exit(i32::from(!ok));
         }
         Err(err) => {
-            eprintln!("error: {}", err);
+            eprintln!("error: {err}");
             exit(1)
         }
     }

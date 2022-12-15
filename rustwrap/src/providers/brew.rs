@@ -59,7 +59,7 @@ pub fn publish(
     opts: &BrewOpts,
 ) -> Result<()> {
     let out_dir = out_dir
-        .join(format!("{}-{}", opts.name, version))
+        .join(format!("{}-{version}", opts.name))
         .join("brew");
 
     let prefix = format!("{} {}", crate::console::COFFEE, style("brew").green());
@@ -90,7 +90,7 @@ pub fn publish(
     let mut hasher = sha2::Sha256::new();
     io::copy(&mut file, &mut hasher)?;
     let hash = hasher.finalize();
-    let sha = format!("{:x}", hash);
+    let sha = format!("{hash:x}");
 
     let recipe = opts.recipe(version, &target.url(version), &sha);
     tracing::info!(recipe, "rendered recipe");
@@ -107,11 +107,11 @@ pub fn publish(
         let client = reqwest::blocking::Client::new();
         let mut res = client
             .put(format!(
-                "https://api.github.com/repos/{}/contents/{}",
-                opts.tap, fname
+                "https://api.github.com/repos/{}/contents/{fname}",
+                opts.tap
             ))
             .header(header::USER_AGENT, "rust-reqwest/rustwrap")
-            .json(&json!({"message": format!("rustwrap update: {}", fname), "content": base64::encode(&recipe)}))
+            .json(&json!({"message": format!("rustwrap update: {fname}"), "content": base64::encode(&recipe)}))
             .bearer_auth(
                 env::var("GITHUB_TOKEN").context("github token not found in 'GITHUB_TOKEN'")?,
             )
