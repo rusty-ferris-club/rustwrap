@@ -13,19 +13,23 @@ readme = "../README.md"
 
 [package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-windows.zip"
-bin-dir = "{ bin }{ binary-ext }"
+bin-dir = "rustwrap-x86_64-pc-windows-msvc/rustwrap.exe"
+pkg-fmt = "zip"
 
 [package.metadata.binstall.overrides.x86_64-apple-darwin]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-macos.tar.xz"
-bin-dir = "{ bin }{ binary-ext }"
+bin-dir = "rustwrap-x86_64-apple-darwin/rustwrap"
+pkg-fmt = "txz"
 
 [package.metadata.binstall.overrides.aarch64-apple-darwin]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-aarch64-macos.tar.xz"
-bin-dir = "{ bin }{ binary-ext }"
+bin-dir = "rustwrap-x86_64-macos/rustwrap"
+pkg-fmt = "txz"
 
 [package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
 pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-linux.tar.xz"
-bin-dir = "{ bin }{ binary-ext }"
+bin-dir = "rustwrap-x86_64-linux/rustwrap"
+pkg-fmt = "txz"
 
 
 [dependencies]
