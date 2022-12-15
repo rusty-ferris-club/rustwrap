@@ -1,6 +1,6 @@
 [package]
 name = "rustwrap"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 
 description = "A tool that helps wrap binary releases for easy distribution"
@@ -10,6 +10,19 @@ repository = "https://github.com/rusty-ferris-club/rustwrap"
 keywords = ["generator", "package", "release"]
 license = "Apache-2.0"
 readme = "../README.md"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-windows.zip"
+
+[package.metadata.binstall.overrides.x86_64-apple-darwin]
+pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-macos.tar.xz"
+
+[package.metadata.binstall.overrides.aarch64-apple-darwin]
+pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-aarch64-macos.tar.xz"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/v{ version }/rustwrap-x86_64-linux.tar.xz"
+
 
 [dependencies]
 
