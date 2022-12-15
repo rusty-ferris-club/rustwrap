@@ -1,6 +1,6 @@
 [package]
 name = "rustwrap"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2021"
 
 description = "A tool that helps wrap binary releases for easy distribution"
