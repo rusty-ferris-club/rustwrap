@@ -6,7 +6,7 @@ use std::{
 };
 
 use crate::console::style;
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use fs_err as fs;
 use reqwest::header;
 use serde::Deserialize;
@@ -105,13 +105,32 @@ pub fn publish(
 
     if opts.publish {
         let client = reqwest::blocking::Client::new();
-        let mut res = client
-            .put(format!(
-                "https://api.github.com/repos/{}/contents/{fname}",
-                opts.tap
-            ))
+        let remote_file = format!("https://api.github.com/repos/{}/contents/{fname}", opts.tap);
+
+        let resp = client
+            .get(&remote_file)
             .header(header::USER_AGENT, "rust-reqwest/rustwrap")
-            .json(&json!({"message": format!("rustwrap update: {fname}"), "content": base64::encode(&recipe)}))
+            .bearer_auth(
+                env::var("GITHUB_TOKEN").context("github token not found in 'GITHUB_TOKEN'")?,
+            )
+            .send()?;
+
+        let sha = match resp.status() {
+            reqwest::StatusCode::OK => match resp.json::<serde_json::Value>() {
+                Ok(parsed) => parsed
+                    .pointer("/sha")
+                    .ok_or_else(|| anyhow!("no `sha` in response"))?
+                    .as_str()
+                    .map(std::string::ToString::to_string),
+                Err(_) => None,
+            },
+            _ => None,
+        };
+
+        let mut res = client
+            .put(&remote_file)
+            .header(header::USER_AGENT, "rust-reqwest/rustwrap")
+            .json(&json!({"message": format!("rustwrap update: {fname}"), "content": base64::encode(&recipe), "sha": sha}))
             .bearer_auth(
                 env::var("GITHUB_TOKEN").context("github token not found in 'GITHUB_TOKEN'")?,
             )
@@ -138,6 +157,7 @@ pub fn publish(
     //
     // save rendered file to disk
     //
+    fs::create_dir_all(&out_dir)?;
     let dest_file = out_dir.join(&fname);
     fs::write(&dest_file, recipe)?;
     session.console.say(&format!(
