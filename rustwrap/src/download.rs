@@ -119,7 +119,7 @@ impl Download {
                 ProgressStyle::default_bar()
                     .template(DEFAULT_PROGRESS_TEMPLATE)
                     .expect("set ProgressStyle template failed")
-                    .progress_chars("━  ·"),
+                    .progress_chars("━  ·"), // ━━╸━━━━━━━━━━━━━
             );
             pb
         } else {

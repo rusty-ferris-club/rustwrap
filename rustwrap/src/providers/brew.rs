@@ -12,6 +12,7 @@ use reqwest::header;
 use serde::Deserialize;
 use serde_json::json;
 use sha2::Digest;
+use tracing::info;
 
 use crate::data::{Architecture, Platform, Session, Target};
 
@@ -61,6 +62,7 @@ pub fn publish(
     let out_dir = out_dir
         .join(format!("{}-{version}", opts.name))
         .join("brew");
+    fs::create_dir_all(&out_dir)?;
 
     let prefix = format!("{} {}", crate::console::COFFEE, style("brew").green());
     session.console.say(&format!(
@@ -115,6 +117,8 @@ pub fn publish(
             )
             .send()?;
 
+        info!("getting existing file response: {}", resp.status());
+
         let sha = match resp.status() {
             reqwest::StatusCode::OK => match resp.json::<serde_json::Value>() {
                 Ok(parsed) => parsed
@@ -157,7 +161,6 @@ pub fn publish(
     //
     // save rendered file to disk
     //
-    fs::create_dir_all(&out_dir)?;
     let dest_file = out_dir.join(&fname);
     fs::write(&dest_file, recipe)?;
     session.console.say(&format!(
