@@ -1,0 +1,31 @@
+targets:
+  - platform: win32
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/rustwrap/releases/download/v__VERSION__/rustwrap-x86_64-windows.zip
+  - platform: linux
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/rustwrap/releases/download/v__VERSION__/rustwrap-x86_64-linux.tar.xz
+  - platform: darwin
+    arch: x64
+    url_template: https://github.com/rusty-ferris-club/rustwrap/releases/download/v__VERSION__/rustwrap-x86_64-macos.tar.xz
+  - platform: darwin
+    arch: arm64
+    url_template: https://github.com/rusty-ferris-club/rustwrap/releases/download/v__VERSION__/rustwrap-aarch64-macos.tar.xz
+brew:
+  name: rustwrap 
+  publish: true
+  tap: jondot/homebrew-tap
+  recipe_fname: rustwrap.rb
+  recipe_template: |
+    class Rustwrap < Formula
+      desc "A tool that helps wrap binary releases for easy distribution"
+      homepage "http://github.com/rusty-ferris-club/rustwrap"
+      url "__URL__"
+      version "__VERSION__"
+      sha256 "__SHA__"
+
+      def install
+        bin.install "rustwrap"
+      end
+    end
+
