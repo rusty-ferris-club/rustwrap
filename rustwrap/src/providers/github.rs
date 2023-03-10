@@ -17,7 +17,7 @@ pub fn get(url: &str) -> Result<reqwest::blocking::Response> {
     let client = reqwest::blocking::Client::new();
     let res = client.get(url).headers(api_headers()?).send()?;
 
-    println!("get response: {res:?}");
+    info!("get response: {}", res.status());
 
     Ok(res)
 }
