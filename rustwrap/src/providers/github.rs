@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_latest_version() {
-        let v = latest("jondot/makeme").unwrap();
+        let v = latest("rusty-ferris-club/rustwrap").unwrap();
         assert!(v > semver::Version::parse("0.0.1").unwrap());
     }
 }
