@@ -26,7 +26,7 @@ pub fn api_headers() -> Result<header::HeaderMap> {
     let mut headers = header::HeaderMap::new();
     headers.insert(
         header::USER_AGENT,
-        "rust-reqwest/self-update"
+        "rust-reqwest/rustwrap"
             .parse()
             .expect("github invalid user-agent"),
     );
