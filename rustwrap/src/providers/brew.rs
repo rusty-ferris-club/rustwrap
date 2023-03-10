@@ -197,8 +197,8 @@ mod tests {
     #[test]
     fn test_latest_version() {
         let v = latest(&BrewOpts {
-            name: "mm".to_string(),
-            tap: "jondot/homebrew-tap".to_string(),
+            name: "rustwrap".to_string(),
+            tap: "rusty-ferris-club/homebrew-tap".to_string(),
             recipe_fname: None,
             recipe_template: String::new(),
             publish: false,
