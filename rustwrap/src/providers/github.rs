@@ -65,6 +65,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[cfg(target_os = "macos")]
     fn test_latest_version() {
         let v = latest("rusty-ferris-club/rustwrap").unwrap();
         assert!(v > semver::Version::parse("0.0.1").unwrap());

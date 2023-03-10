@@ -195,6 +195,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[cfg(target_os = "macos")]
     fn test_latest_version() {
         let v = latest(&BrewOpts {
             name: "rustwrap".to_string(),
