@@ -44,6 +44,13 @@ pub fn command() -> Command {
                 .help("Version tag to package (e.g. '1.0.1')"),
         )
         .arg(
+            Arg::new("latest")
+                .short('l')
+                .long("latest")
+                .help("populate tag with the latest discovered release")
+                .action(ArgAction::SetTrue),
+        )
+        .arg(
             Arg::new("verbose")
                 .long("verbose")
                 .help("Show details about interactions")
@@ -59,9 +66,7 @@ pub fn command() -> Command {
 fn run(matches: &ArgMatches) -> AnyResult<bool> {
     let out_path = matches.get_one::<String>("out");
     let config_file = matches.get_one::<String>("config");
-    let version = matches
-        .get_one::<String>("tag")
-        .ok_or_else(|| anyhow::anyhow!("no version tag given. please supply one with `--tag`"))?;
+    let version = matches.get_one::<String>("tag").cloned();
 
     runner::run(
         version,

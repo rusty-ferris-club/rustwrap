@@ -4,6 +4,7 @@ pub use console::style;
 use console::Emoji;
 
 pub static FINGER: Emoji<'_, '_> = Emoji("👉", "->");
+pub static INFO: Emoji<'_, '_> = Emoji("🍭", "*");
 pub static DOWNLOAD: Emoji<'_, '_> = Emoji("⚡️", "!");
 pub static PKG: Emoji<'_, '_> = Emoji("📦", "*");
 pub static COFFEE: Emoji<'_, '_> = Emoji("☕️", "*");

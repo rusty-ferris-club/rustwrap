@@ -1,6 +1,6 @@
 [package]
 name = "rustwrap"
-version = "1.0.5"
+version = "1.1.0"
 edition = "2021"
 
 description = "A tool that helps wrap binary releases for easy distribution"
@@ -36,6 +36,7 @@ pkg-fmt = "txz"
 
 clap = { version = "4", features = ["cargo"] }
 indicatif = "0.17.2"
+semver = "1.0.16"
 reqwest = { version = "0.11.13", features = ["json", "blocking"] }
 serde = { version = "1.0.149", features = ["derive"] }
 serde_json = { version = "1.0.89", features = ["preserve_order"] }

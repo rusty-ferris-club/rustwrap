@@ -32,6 +32,9 @@ impl NpmOpts {
     pub fn shim_name(&self) -> String {
         self.bin.as_ref().unwrap_or(&self.name).to_string()
     }
+    pub fn root_package_name(&self) -> String {
+        self.root.name.as_ref().unwrap_or(&self.name).to_string()
+    }
 }
 
 const BIN_SHIM: &str = include_str!("static/npm/bin-shim");
@@ -39,6 +42,12 @@ const POSTINSTALL: &str = include_str!("static/npm/postinstall.js");
 const PACKAGE_JSON: &str = "package.json";
 const POSTINSTALL_JS: &str = "postinstall.js";
 const INFO_JSON: &str = "info.json";
+
+pub fn latest(opts: &NpmOpts) -> Result<semver::Version> {
+    let out = duct::cmd!("npm", "view", opts.root_package_name(), "version").read()?;
+
+    semver::Version::parse(&out).context("cannot parse version")
+}
 
 fn subpkg_name(target: &Target, opts: &NpmOpts) -> String {
     format!(
@@ -99,10 +108,7 @@ fn edit_rootpkg(
 ) -> serde_json::Value {
     let mut new = pkg.clone();
     let res = new.as_object_mut().expect("malformed json");
-    res.insert(
-        "name".to_string(),
-        json!(opts.root.name.as_ref().unwrap_or(&opts.name)),
-    );
+    res.insert("name".to_string(), json!(opts.root_package_name()));
     res.insert("version".to_string(), json!(version.to_string()));
     let mut hsh = HashMap::new();
     for target in targets {
@@ -355,5 +361,27 @@ mod tests {
             },
         )
         .unwrap();
+    }
+
+    #[test]
+    fn test_latest_version() {
+        let v = latest(&NpmOpts {
+            org: "foo".to_string(),
+            name: "react".to_string(),
+            publish: false,
+            bin: None,
+            root: PackageInfo {
+                name: None,
+                manifest: String::new(),
+                readme: None,
+            },
+            sub: PackageInfo {
+                name: None,
+                manifest: String::new(),
+                readme: None,
+            },
+        })
+        .unwrap();
+        assert!(v > semver::Version::parse("18.0.0").unwrap());
     }
 }

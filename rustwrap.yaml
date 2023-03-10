@@ -1,3 +1,4 @@
+repo: rusty-ferris-club/rustwrap
 targets:
   - platform: win32
     arch: x64
@@ -14,7 +15,7 @@ targets:
 brew:
   name: rustwrap 
   publish: true
-  tap: jondot/homebrew-tap
+  tap: rusty-ferris-club/homebrew-tap
   recipe_fname: rustwrap.rb
   recipe_template: |
     class Rustwrap < Formula

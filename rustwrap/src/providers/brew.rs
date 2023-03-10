@@ -1,18 +1,19 @@
 #![allow(clippy::module_name_repetitions)]
+use regex::Regex;
 use std::{
-    env,
     io::{self, Read},
     path::Path,
 };
 
-use crate::console::style;
-use anyhow::{anyhow, bail, Context, Result};
+use crate::{
+    console::style,
+    providers::github::{get, put},
+};
+use anyhow::{anyhow, bail, Result};
 use fs_err as fs;
-use reqwest::header;
 use serde::Deserialize;
 use serde_json::json;
 use sha2::Digest;
-use tracing::info;
 
 use crate::data::{Architecture, Platform, Session, Target};
 
@@ -50,6 +51,40 @@ impl BrewOpts {
             .replace(VAR_URL, url)
             .replace(VAR_SHA, sha)
     }
+
+    fn recipe_file(&self) -> String {
+        self.recipe_fname
+            .clone()
+            .unwrap_or_else(|| format!("{}.rb", self.name))
+    }
+}
+
+pub fn latest(opts: &BrewOpts) -> Result<semver::Version> {
+    let remote_file = format!(
+        "https://api.github.com/repos/{}/contents/{}",
+        opts.tap,
+        opts.recipe_file()
+    );
+    let resp: serde_json::Value = get(&remote_file)?.json()?;
+    let content = resp
+        .pointer("/content")
+        .and_then(serde_json::Value::as_str)
+        .and_then(|s| base64::decode(s.replace('\n', "")).ok())
+        .and_then(|d| String::from_utf8(d).ok());
+    let v = match content {
+        Some(c) => {
+            let re = Regex::new("version \"(.*)\"").unwrap();
+            let caps = re.captures(c.as_ref());
+            caps.and_then(|cs| cs.get(1))
+                .map(|cap| cap.as_str().to_string())
+        }
+        None => {
+            bail!("no content found at {remote_file}")
+        }
+    };
+
+    v.and_then(|v| semver::Version::parse(&v).ok())
+        .ok_or_else(|| anyhow::format_err!("cannot find version at {remote_file}"))
 }
 
 pub fn publish(
@@ -100,24 +135,11 @@ pub fn publish(
     //
     // post the rendered file to github
     //
-    let fname = opts
-        .recipe_fname
-        .clone()
-        .unwrap_or_else(|| format!("{}.rb", opts.name));
+    let fname = opts.recipe_file();
 
     if opts.publish {
-        let client = reqwest::blocking::Client::new();
         let remote_file = format!("https://api.github.com/repos/{}/contents/{fname}", opts.tap);
-
-        let resp = client
-            .get(&remote_file)
-            .header(header::USER_AGENT, "rust-reqwest/rustwrap")
-            .bearer_auth(
-                env::var("GITHUB_TOKEN").context("github token not found in 'GITHUB_TOKEN'")?,
-            )
-            .send()?;
-
-        info!("getting existing file response: {}", resp.status());
+        let resp = get(&remote_file)?;
 
         let sha = match resp.status() {
             reqwest::StatusCode::OK => match resp.json::<serde_json::Value>() {
@@ -131,14 +153,10 @@ pub fn publish(
             _ => None,
         };
 
-        let mut res = client
-            .put(&remote_file)
-            .header(header::USER_AGENT, "rust-reqwest/rustwrap")
-            .json(&json!({"message": format!("rustwrap update: {fname}"), "content": base64::encode(&recipe), "sha": sha}))
-            .bearer_auth(
-                env::var("GITHUB_TOKEN").context("github token not found in 'GITHUB_TOKEN'")?,
-            )
-            .send()?;
+        let mut res = put(
+            &remote_file,
+            &json!({"message": format!("rustwrap update: {fname}"), "content": base64::encode(&recipe), "sha": sha}),
+        )?;
 
         if !res.status().is_success() {
             let mut response_body = String::new();
@@ -170,4 +188,22 @@ pub fn publish(
     ));
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_latest_version() {
+        let v = latest(&BrewOpts {
+            name: "mm".to_string(),
+            tap: "jondot/homebrew-tap".to_string(),
+            recipe_fname: None,
+            recipe_template: String::new(),
+            publish: false,
+        })
+        .unwrap();
+        assert!(v > semver::Version::parse("0.0.1").unwrap());
+    }
 }

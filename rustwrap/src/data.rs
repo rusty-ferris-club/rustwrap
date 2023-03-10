@@ -76,6 +76,7 @@ impl Target {
 
 #[derive(Deserialize, Default)]
 pub struct Config {
+    pub repo: Option<String>,
     pub targets: Vec<Target>,
     pub npm: Option<NpmOpts>,
     pub brew: Option<BrewOpts>,
