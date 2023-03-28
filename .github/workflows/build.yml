@@ -55,9 +55,9 @@ jobs:
       - uses: Swatinem/rust-cache@v1
 
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   coverage:
     name: Coverage
