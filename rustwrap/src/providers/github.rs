@@ -48,9 +48,11 @@ pub fn latest(repo: &str) -> Result<semver::Version> {
     let resp = get(&api_url)?;
     if !resp.status().is_success() {
         bail!(
-            "api request failed with status: {:?} - for: {:?}",
+            "api request failed with status: {:?} - for: {:?} (ratelimit: {:?}/{:?})",
             resp.status(),
-            api_url
+            api_url,
+            resp.headers().get("x-ratelimit-remaining"),
+            resp.headers().get("x-ratelimit-limit")
         )
     }
     let json = resp.json::<serde_json::Value>()?;
