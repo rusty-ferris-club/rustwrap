@@ -44,7 +44,12 @@ const POSTINSTALL_JS: &str = "postinstall.js";
 const INFO_JSON: &str = "info.json";
 
 pub fn latest(opts: &NpmOpts) -> Result<semver::Version> {
-    let out = duct::cmd!("npm", "view", opts.root_package_name(), "version").read()?;
+    #[cfg(not(target_os = "windows"))]
+    let npm = "npm";
+    #[cfg(target_os = "windows")]
+    let npm = "npm.exe";
+
+    let out = duct::cmd!(npm, "view", opts.root_package_name(), "version").read()?;
 
     semver::Version::parse(&out).context("cannot parse version")
 }
