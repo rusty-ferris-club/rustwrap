@@ -45,11 +45,17 @@ const INFO_JSON: &str = "info.json";
 
 pub fn latest(opts: &NpmOpts) -> Result<semver::Version> {
     #[cfg(not(target_os = "windows"))]
-    let npm = "npm";
+    let out = duct::cmd!("npm", "view", opts.root_package_name(), "version").read()?;
     #[cfg(target_os = "windows")]
-    let npm = "npm.exe";
-
-    let out = duct::cmd!(npm, "view", opts.root_package_name(), "version").read()?;
+    let out = duct::cmd!(
+        "cmd",
+        "/C",
+        "npm",
+        "view",
+        opts.root_package_name(),
+        "version"
+    )
+    .read()?;
 
     semver::Version::parse(&out).context("cannot parse version")
 }
