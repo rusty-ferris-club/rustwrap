@@ -21,7 +21,7 @@ const VAR_URL: &str = "__URL__";
 const VAR_SHA: &str = "__SHA__";
 const VAR_VERSION: &str = "__VERSION__";
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 pub struct BrewOpts {
     pub name: String,
     pub tap: String,
@@ -45,11 +45,14 @@ impl BrewOpts {
         Ok(())
     }
 
-    fn recipe(&self, version: &str, url: &str, sha: &str) -> String {
-        self.recipe_template
-            .replace(VAR_VERSION, version)
-            .replace(VAR_URL, url)
-            .replace(VAR_SHA, sha)
+    fn recipe(&self, version: &str, target_details: Vec<(Architecture, String, String)>) -> String {
+        let mut out = self.recipe_template.replace(VAR_VERSION, version);
+        for (arch, url, sha) in target_details {
+            out = out
+                .replace(&format!("{VAR_URL}[{arch}]"), &url)
+                .replace(&format!("{VAR_SHA}[{arch}]"), &sha);
+        }
+        out
     }
 
     fn recipe_file(&self) -> String {
@@ -108,28 +111,37 @@ pub fn publish(
 
     opts.validate()?;
 
-    let target = targets
+    let mac_targets = targets
         .iter()
-        .find(|t| t.arch == Architecture::X64 && t.platform == Platform::Darwin)
-        .ok_or_else(|| anyhow::anyhow!("no Intel macOS compatible target found"))?;
+        .filter(|t| {
+            (t.arch == Architecture::X64 || t.arch == Architecture::ARM64)
+                && t.platform == Platform::Darwin
+        })
+        .collect::<Vec<_>>();
 
-    //
-    // prep: file name, template, hash, and render the url incl. version
-    // then, render the recipe file (ruby source)
-    //
-    let fname = target
-        .archive
-        .as_ref()
-        .ok_or_else(|| anyhow::anyhow!("archive '{:?}' was not found", target))?;
+    if mac_targets.is_empty() {
+        anyhow::bail!("no targets available");
+    }
+    let mut target_details = Vec::new();
+    for target in mac_targets {
+        //
+        // prep: file name, template, hash, and render the url incl. version
+        // then, render the recipe file (ruby source)
+        //
+        let fname = target
+            .archive
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("archive '{:?}' was not found", target))?;
 
-    let mut file = fs::File::open(fname)?;
+        let mut file = fs::File::open(fname)?;
 
-    let mut hasher = sha2::Sha256::new();
-    io::copy(&mut file, &mut hasher)?;
-    let hash = hasher.finalize();
-    let sha = format!("{hash:x}");
-
-    let recipe = opts.recipe(version, &target.url(version), &sha);
+        let mut hasher = sha2::Sha256::new();
+        io::copy(&mut file, &mut hasher)?;
+        let hash = hasher.finalize();
+        let sha = format!("{hash:x}");
+        target_details.push((target.arch.clone(), target.url(version), sha));
+    }
+    let recipe = opts.recipe(version, target_details);
     tracing::info!(recipe, "rendered recipe");
 
     //

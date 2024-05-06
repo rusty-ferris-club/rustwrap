@@ -67,23 +67,22 @@ pub fn run(version: Option<String>, config_file: &Path, out_path: &Path) -> Resu
 
     if let Some(brew) = config.brew.as_ref() {
         let prefix = format!("{} {}", crate::console::COFFEE, style("brew").green());
-        let latest_v = brew::latest(brew)?;
-        if latest_v < target_v {
+        if brew.publish {
+            let latest_v = brew::latest(brew)?;
+            if latest_v < target_v {
+                bail!("current latest version is newer, aborting publish")
+            }
             session.console.say(&format!(
                 "{prefix} current: {latest_v}, publishing: {target_v}..."
             ));
-            brew::publish(
-                &mut session,
-                out_path,
-                &target_v.to_string(),
-                &versioned_targets,
-                brew,
-            )?;
-        } else {
-            session
-                .console
-                .say(&format!("{prefix} discovered version ({latest_v}) higher/equal to target version ({target_v}), skipping."));
         }
+        brew::publish(
+            &mut session,
+            out_path,
+            &target_v.to_string(),
+            &versioned_targets,
+            brew,
+        )?;
     }
     Ok(())
 }

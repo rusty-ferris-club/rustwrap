@@ -85,8 +85,8 @@ brew:
     class Recon < Formula
       desc "recon"
       homepage "http://www.example.com"
-      url "__URL__"
       version "__VERSION__"
+      url "__URL__"
       sha256 "__SHA__"
 
       def install

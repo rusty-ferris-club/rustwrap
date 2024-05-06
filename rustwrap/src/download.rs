@@ -178,11 +178,7 @@ impl<'a> TargetsDownloader<'a> {
             .iter()
             .map(|t| {
                 // if we have an archive and it exists on disk return it, otherwise download it
-                if t.archive.is_some()
-                    && t.archive
-                        .as_ref()
-                        .map(|a| Path::new(&self.out_dir.join(a)).exists())
-                        .unwrap_or_default()
+                if t.archive.is_some() && t.archive.as_ref().is_some_and(|a| Path::new(&a).exists())
                 {
                     Ok(t.clone())
                 } else {
